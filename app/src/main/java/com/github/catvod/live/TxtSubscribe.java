@@ -3,6 +3,7 @@ package com.github.catvod.live;
 import android.util.Base64;
 
 import com.github.catvod.utils.okhttp.OkHttpUtil;
+import io.github.pixee.security.BoundedLineReader;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -33,17 +34,17 @@ public class TxtSubscribe {
     public static void parse(LinkedHashMap<String, LinkedHashMap<String, ArrayList<String>>> allLives, String txt) {
         try {
             BufferedReader br = new BufferedReader(new StringReader(txt));
-            String line = br.readLine();
+            String line = BoundedLineReader.readLine(br, 5_000_000);
             LinkedHashMap<String, ArrayList<String>> noGroup = new LinkedHashMap<>();
             LinkedHashMap<String, ArrayList<String>> groupLives = noGroup;
             while (line != null) {
                 if (line.trim().isEmpty()) {
-                    line = br.readLine();
+                    line = BoundedLineReader.readLine(br, 5_000_000);
                     continue;
                 }
                 String[] lineInfo = line.split(",");
                 if (lineInfo.length < 2) {
-                    line = br.readLine();
+                    line = BoundedLineReader.readLine(br, 5_000_000);
                     continue;
                 }
                 if (line.contains("#genre#")) {
@@ -76,7 +77,7 @@ public class TxtSubscribe {
                         }
                     }
                 }
-                line = br.readLine();
+                line = BoundedLineReader.readLine(br, 5_000_000);
             }
             br.close();
             if (!noGroup.isEmpty()) {
