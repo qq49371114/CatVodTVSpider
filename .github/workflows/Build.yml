@@ -29,8 +29,6 @@ jobs:
     - name: Clone project
       run: |
         rm -rf jar/custom_spider.jar
-        git clone --recurse-submodules https://github.com/FongMi/CatVodSpider project
-        rm -rf jar/custom_spider.jar
         git clone --recurse-submodules https://github.com/zhixc/CatVodTVSpider project
 
       
