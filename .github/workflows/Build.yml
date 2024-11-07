@@ -29,7 +29,9 @@ jobs:
     - name: Clone project
       run: |
         rm -rf jar/custom_spider.jar
+        git clone --recurse-submodules https://github.com/FongMi/CatVodSpider project
         git clone --recurse-submodules https://github.com/zhixc/CatVodTVSpider project
+
       
     - name: Customize Spider
       working-directory: ./project
@@ -42,8 +44,8 @@ jobs:
       working-directory: ./project
       run: |
          chmod +x gradlew
-         cat app/src/main/java/com/github/catvod/spider/PushAgent.java
-
+         cat app/src/main/java/com/github/catvod/spider/Push.java
+         cat app/src/main/java/com/github/catvod/spider/PTT.java
          ./gradlew assemblerelease --build-cache --parallel --daemon --warning-mode all
          
     - name: Customize Spider Jar
