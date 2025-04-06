@@ -61,7 +61,7 @@ jobs:
          echo $(md5sum ../jar/custom_spider.jar | awk '{print $1}') > ../jar/custom_spider.jar.md5
          
     - name: Upload APK
-      uses: actions/upload-artifact@v3.1.2
+      uses: actions/upload-artifact@main
       with:
         name: Spider
         path: ./jar/custom_spider.jar
@@ -72,3 +72,4 @@ jobs:
         default_author: github_actions
         message: 'update spider jar'
         add: "['./jar/custom_spider.jar', './jar/custom_spider.jar.md5']"        
+
