@@ -33,7 +33,7 @@ import java.util.Locale;
 import java.util.Map;
 
 /**
- * @author ColaMint & FongMi & 唐三
+ * @author ColaMint & FongMi & 唐三 & 林婉儿优化版
  */
 public class Bili extends Spider {
 
@@ -44,6 +44,7 @@ public class Bili extends Spider {
     private boolean login;
     private boolean isVip;
     private Wbi wbi;
+    private long lastWbiTime = 0;
 
     private static Map<String, String> getHeader() {
         Map<String, String> headers = new HashMap<>();
@@ -75,6 +76,7 @@ public class Bili extends Spider {
     public void init(Context context, String extend) throws Exception {
         this.extend = Json.safeObject(extend);
         setCookie();
+        checkLogin();
     }
 
     @Override
@@ -92,16 +94,22 @@ public class Bili extends Spider {
 
     @Override
     public String homeVideoContent() {
-        String api = "https://api.bilibili.com/x/web-interface/popular?ps=20";
-        String json = OkHttp.string(api, getHeader());
-        Resp resp = Resp.objectFrom(json);
-        List<Vod> list = new ArrayList<>();
-        for (Resp.Result item : Resp.Result.arrayFrom(resp.getData().getList())) list.add(item.getVod());
-        return Result.string(list);
+        try {
+            String api = "https://api.bilibili.com/x/web-interface/popular?ps=20";
+            String json = OkHttp.string(api, getHeader());
+            Resp resp = Resp.objectFrom(json);
+            List<Vod> list = new ArrayList<>();
+            for (Resp.Result item : Resp.Result.arrayFrom(resp.getData().getList())) list.add(item.getVod());
+            return Result.string(list);
+        } catch (Exception e) {
+            return Result.string(new ArrayList<>());
+        }
     }
 
     @Override
     public String categoryContent(String tid, String pg, boolean filter, HashMap<String, String> extend) throws Exception {
+        checkWbiExpired();
+
         if (tid.endsWith("/{pg}")) {
             LinkedHashMap<String, Object> params = new LinkedHashMap<>();
             params.put("mid", tid.split("/")[0]);
@@ -114,7 +122,15 @@ public class Bili extends Spider {
             String order = extend.containsKey("order") ? extend.get("order") : "totalrank";
             String duration = extend.containsKey("duration") ? extend.get("duration") : "0";
             if (extend.containsKey("tid")) tid = tid + " " + extend.get("tid");
-            String api = "https://api.bilibili.com/x/web-interface/search/type?search_type=video&keyword=" + URLEncoder.encode(tid) + "&order=" + order + "&duration=" + duration + "&page=" + pg;
+            
+            LinkedHashMap<String, Object> params = new LinkedHashMap<>();
+            params.put("search_type", "video");
+            params.put("keyword", tid);
+            params.put("order", order);
+            params.put("duration", duration);
+            params.put("page", pg);
+
+            String api = "https://api.bilibili.com/x/web-interface/wbi/search/type?" + wbi.getQuery(params);
             String json = OkHttp.string(api, getHeader());
             Resp resp = Resp.objectFrom(json);
             List<Vod> list = new ArrayList<>();
@@ -188,7 +204,7 @@ public class Bili extends Spider {
 
     @Override
     public String playerContent(String flag, String id, List<String> vipFlags) throws Exception {
-        String[] ids = id.split("\\+");
+        String[] ids = id.split("\+");
         String aid = ids[0];
         String cid = ids[1];
         String[] acceptDesc = ids[3].split(":");
@@ -269,11 +285,24 @@ public class Bili extends Spider {
         return String.format(Locale.getDefault(), "<MPD xmlns:xsi=\"http://www.w3.org/2001/XMLSchema-instance\" xmlns=\"urn:mpeg:dash:schema:mpd:2011\" xsi:schemaLocation=\"urn:mpeg:dash:schema:mpd:2011 DASH-MPD.xsd\" type=\"static\" mediaPresentationDuration=\"PT%sS\" minBufferTime=\"PT%sS\" profiles=\"urn:mpeg:dash:profile:isoff-on-demand:2011\">\n" + "<Period duration=\"PT%sS\" start=\"PT0S\">\n" + "%s\n" + "%s\n" + "</Period>\n" + "</MPD>", dash.getDuration(), dash.getMinBufferTime(), dash.getDuration(), videoList, audioList);
     }
 
-    private void checkLogin() {
-        String json = OkHttp.string("https://api.bilibili.com/x/web-interface/nav", getHeader());
-        Data data = Resp.objectFrom(json).getData();
-        login = data.isLogin();
-        isVip = data.isVip();
-        wbi = data.getWbi();
+    private synchronized void checkLogin() {
+        try {
+            String json = OkHttp.string("https://api.bilibili.com/x/web-interface/nav", getHeader());
+            Data data = Resp.objectFrom(json).getData();
+            login = data.isLogin();
+            isVip = data.isVip();
+            wbi = data.getWbi();
+            lastWbiTime = System.currentTimeMillis();
+        } catch (Exception e) {
+            if (wbi == null) {
+                wbi = new Wbi();
+            }
+        }
+    }
+
+    private void checkWbiExpired() {
+        if (wbi == null || (System.currentTimeMillis() - lastWbiTime > 3600 * 1000)) {
+            checkLogin();
+        }
     }
 }
