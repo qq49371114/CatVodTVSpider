@@ -1,5 +1,5 @@
 {
-  "spider": "https://andoridspidermt.netlify.app/jar/custom_spider.jar;md5;153fe041f1a364fef8f53545dd52588a",
+  "spider": "https://android.lushunming.qzz.io/jar/custom_spider.jar;md5;2608f471a7eeaf86e6e34a18e5576b2d",
   "lives": [
     {
       "name": "电视直播",
@@ -58,15 +58,23 @@
       "filterable": 1
     },
     {
-      "key": "玩偶",
-      "name": "玩偶哥哥",
+      "key": "DuoDuo",
+      "name": "多多视频",
       "type": 3,
-      "api": "csp_Wogg",
+      "api": "csp_DuoDuo",
       "searchable": 1,
       "changeable": 1,
-      "ext": "{\"site\": [\"https://www.wogg.net/\",\"https://wogg.xxooo.cf/\"]}"
+      "ext": "{\"site\": [\"http://xsayang.fun:12512/\",\"https://tv.yydsys.top/\"]}"
     },
-
+    {
+      "key": "SeedHub",
+      "name": "SeedHub",
+      "type": 3,
+      "api": "csp_SeedHub",
+      "searchable": 1,
+      "changeable": 1,
+      "ext": {}
+    },
     {
       "key": "PanTa",
       "name": "盘他|139Pan",
@@ -93,30 +101,145 @@
       "searchable": 1,
       "changeable": 1,
       "ext": {}
-    },  {
-      "key": "TgSearch",
-      "name": "TgSearch|Pan",
+    },
+    {
+      "key": "Qupans",
+      "name": "Qupans|Pan",
       "type": 3,
-      "api": "csp_TgSearch",
+      "api": "csp_Qupans",
       "searchable": 1,
       "changeable": 1,
       "ext": {}
-    }, {
-      "key": "TgQuarkSearch",
-      "name": "TgQuarkSearch|Pan",
+    },
+    {
+      "key": "Tg123Search",
+      "name": "Tg123Search",
       "type": 3,
-      "api": "csp_TgQuarkSearch",
+      "api": "csp_Tg123Search",
       "searchable": 1,
       "changeable": 1,
       "ext": {}
-    }, {
+    },
+    {
+      "key": "TgbaiduSearch",
+      "name": "TgbaiduSearch",
+      "type": 3,
+      "api": "csp_TgbaiduSearch",
+      "searchable": 1,
+      "changeable": 1,
+      "ext": {}
+    },
+    {
       "key": "Tg189Search",
-      "name": "Tg189Search|Pan",
+      "name": "Tg189Search",
       "type": 3,
       "api": "csp_Tg189Search",
       "searchable": 1,
       "changeable": 1,
       "ext": {}
+    },
+    {
+      "key": "TgQuarkSearch",
+      "name": "TgQuarkSearch",
+      "type": 3,
+      "api": "csp_TgQuarkSearch",
+      "searchable": 1,
+      "changeable": 1,
+      "ext": {}
+    },{
+      "key": "TgSearchQuark",
+      "name": "☁TgSearchQuark┃网盘",
+      "type": 3,
+      "api": "csp_TgSearchQuark",
+      "searchable": 1,
+      "filterable": 0,
+      "ext": {
+        "api_urls": [
+            "https://so.252035.xyz/api/search","https://s.panhunt.com/api/search","https://www.pansd.icu/api/search"
+        ],
+        "sources": [
+          "夸克"
+        ]
+      }
+    },
+    {
+      "key": "TgSearchBaidu",
+      "name": "☁TgSearchBaidu┃网盘",
+      "type": 3,
+      "api": "csp_TgSearchBaidu",
+      "searchable": 1,
+      "filterable": 0,
+      "ext": {
+        "api_urls": [
+            "https://so.252035.xyz/api/search","https://s.panhunt.com/api/search","https://www.pansd.icu/api/search"
+        ],
+        "sources": [
+           "百度"
+        ]
+      }
+    },
+    {
+      "key": "TgSearch123",
+      "name": "☁TgSearch123┃网盘",
+      "type": 3,
+      "api": "csp_TgSearch123",
+      "searchable": 1,
+      "filterable": 0,
+      "ext": {
+        "api_urls": [
+            "https://so.252035.xyz/api/search","https://s.panhunt.com/api/search","https://www.pansd.icu/api/search"
+        ],
+        "sources": [
+          "123盘"
+        ]
+      }
+    },
+    {
+      "key": "TgSearch189",
+      "name": "☁TgSearch189┃网盘",
+      "type": 3,
+      "api": "csp_TgSearch189",
+      "searchable": 1,
+      "filterable": 0,
+      "ext": {
+        "api_urls": [
+            "https://so.252035.xyz/api/search","https://s.panhunt.com/api/search","https://www.pansd.icu/api/search"
+        ],
+        "sources": [
+         "天翼"
+        ]
+      }
+    },{
+      "key": "TgSearch139",
+      "name": "☁TgSearch139┃网盘",
+      "type": 3,
+      "api": "csp_TgSearch139",
+      "searchable": 1,
+      "filterable": 0,
+      "ext": {
+        "api_urls": [
+            "https://so.252035.xyz/api/search","https://s.panhunt.com/api/search","https://www.pansd.icu/api/search"
+        ],
+        "sources": [
+          "移动"
+        ]
+      }
+    },
+    {
+      "key": "TgSearchMagnet",
+      "name": "☁TgSearchMagnet┃网盘",
+      "type": 3,
+      "api": "csp_TgSearchMagnet",
+      "searchable": 1,
+      "filterable": 0,
+      "ext": {
+        "api_urls": [
+          "https://so.252035.xyz/api/search","https://s.panhunt.com/api/search","https://www.pansd.icu/api/search"
+        ],
+        "sources": [
+          "磁力"
+        ]
+      }
     },
     {
       "key": "KuaKeBa",
@@ -145,7 +268,15 @@
       "changeable": 1,
       "ext": {}
     },
-
+    {
+      "key": "ReBoYingShi",
+      "name": "热播影视4k",
+      "type": 3,
+      "api": "csp_ReBoYingShi",
+      "searchable": 1,
+      "changeable": 1,
+      "ext": {}
+    },
     {
       "key": "XuanFeng",
       "name": "旋风影视",
@@ -326,6 +457,32 @@
       "api": "csp_TianYiSo",
       "searchable": 1,
       "timeout": 30
+    },
+    {
+      "key": "local",
+      "name": "Local",
+      "type": 3,
+      "api": "csp_Local",
+      "searchable": 0,
+      "changeable": 0
+    },
+    {
+      "key": "market",
+      "name": "Market",
+      "type": 3,
+      "api": "csp_Market",
+      "searchable": 0,
+      "changeable": 0,
+      "ext": "./market.json"
+    },
+    {
+      "key": "push_agent",
+      "name": "Push",
+      "type": 3,
+      "api": "csp_Push",
+      "searchable": 0,
+      "changeable": 0,
+      "timeout": 60
     }
 
   ],
