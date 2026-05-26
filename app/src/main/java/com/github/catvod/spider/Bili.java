@@ -130,12 +130,43 @@ public class Bili extends Spider {
             params.put("duration", duration);
             params.put("page", pg);
 
-            String api = "https://api.bilibili.com/x/web-interface/wbi/search/type?" + wbi.getQuery(params);
-            String json = OkHttp.string(api, getHeader());
-            Resp resp = Resp.objectFrom(json);
-            List<Vod> list = new ArrayList<>();
-            for (Resp.Result item : Resp.Result.arrayFrom(resp.getData().getResult())) list.add(item.getVod());
-            return Result.string(list);
+            try {
+                String api = "https://api.bilibili.com/x/web-interface/search/all/v2?keyword=" + URLEncoder.encode(tid, "UTF-8") + "&page=" + pg;
+                String json = OkHttp.string(api, getHeader());
+                JsonObject data = Json.parse(json).getAsJsonObject().getAsJsonObject("data");
+                List<Vod> list = new ArrayList<>();
+                if (data != null && data.has("result")) {
+                    JsonArray resultArr = data.getAsJsonArray("result");
+                    for (int i = 0; i < resultArr.size(); i++) {
+                        JsonObject r = resultArr.get(i).getAsJsonObject();
+                        if (r.has("result_type") && "video".equals(r.get("result_type").getAsString())) {
+                            JsonArray items = r.getAsJsonArray("data");
+                            for (int j = 0; j < items.size(); j++) {
+                                JsonObject item = items.get(j).getAsJsonObject();
+                                String bvid = item.has("bvid") ? item.get("bvid").getAsString() : "";
+                                String aid = item.has("aid") ? item.get("aid").getAsString() : "";
+                                if (TextUtils.isEmpty(bvid)) continue;
+                                Vod vod = new Vod();
+                                vod.setVodId(bvid + "@" + aid);
+                                vod.setVodName(org.jsoup.Jsoup.parse(item.get("title").getAsString()).text());
+                                String pic = item.get("pic").getAsString();
+                                vod.setVodPic(pic.startsWith("//") ? "https:" + pic : pic);
+                                String durationStr = item.has("duration") ? item.get("duration").getAsString() : "";
+                                if (durationStr.contains(":")) {
+                                    vod.setVodRemarks(durationStr.split(":")[0] + "分鐘");
+                                } else {
+                                    vod.setVodRemarks(durationStr);
+                                }
+                                list.add(vod);
+                            }
+                            break;
+                        }
+                    }
+                }
+                return Result.string(list);
+            } catch (Exception e) {
+                return Result.string(new ArrayList<>());
+            }
         }
     }
 
