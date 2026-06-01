@@ -11,20 +11,19 @@ import android.view.ViewGroup;
 import android.webkit.ValueCallback;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-
 import com.github.catvod.spider.Init;
+import org.apache.commons.lang3.StringUtils;
 
 import java.math.BigInteger;
 import java.net.URI;
 import java.nio.charset.Charset;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
-import java.util.Arrays;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Locale;
+import java.util.*;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import static android.net.Uri.encode;
 
 public class Util {
     public static final String patternAli = "(https:\\/\\/www\\.aliyundrive\\.com\\/s\\/[^\"]+|https:\\/\\/www\\.alipan\\.com\\/s\\/[^\"]+)";
@@ -33,6 +32,8 @@ public class Util {
     public static final Pattern RULE = Pattern.compile("http((?!http).){12,}?\\.(m3u8|mp4|mkv|flv|mp3|m4a|aac)\\?.*|http((?!http).){12,}\\.(m3u8|mp4|mkv|flv|mp3|m4a|aac)|http((?!http).)*?video/tos*");
     public static final Pattern THUNDER = Pattern.compile("(magnet|thunder|ed2k):.*");
     public static final String CHROME = "Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/122.0.0.0 Safari/537.36";
+    public static final String MOBILE = "Mozilla/5.0 (Linux; Android 6.0; Nexus 5 Build/MRA58N) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/142.0.0.0 Mobile Safari/537.36 Edg/142.0.0.0";
+
     public static final String ACCEPT = "text/html,application/xhtml+xml,application/xml;q=0.9,image/avif,image/webp,image/apng,*/*;q=0.8,application/signed-exchange;v=b3;q=0.7";
     public static final List<String> MEDIA = Arrays.asList("mp4", "mkv", "wmv", "flv", "avi", "iso", "mpg", "ts", "mp3", "aac", "flac", "m4a", "ape", "ogg");
     public static final List<String> SUB = Arrays.asList("srt", "ass", "ssa", "vtt");
@@ -260,6 +261,12 @@ public class Util {
             return "";
         }
     }
+    public static String getStrByRegex(Pattern pattern, String str) {
+        Matcher matcher = pattern.matcher(str);
+        if (matcher.find()) return matcher.group(1).trim();
+        return "";
+    }
+
 
     public static String base64Decode(String s) {
         return new String(android.util.Base64.decode(s, Base64.NO_WRAP), Charset.defaultCharset());
@@ -349,6 +356,51 @@ public class Util {
             hexString.append(hex);
         }
         return hexString.toString();
+    }
+
+    public static String sha256Hex(String input) {
+        try {
+            MessageDigest md = MessageDigest.getInstance("SHA-256");
+            byte[] messageDigest = md.digest(input.getBytes(Charset.defaultCharset()));
+            return bytesToHex(messageDigest);
+        } catch (NoSuchAlgorithmException e) {
+            throw new RuntimeException(e);
+        }
+    }
+
+    public static String unicodeToString(String unicode) {
+        if (StringUtils.isBlank(unicode)) {
+            return unicode;
+        }
+
+        final int len = unicode.length();
+        StringBuilder sb = new StringBuilder(len);
+        int i;
+        int pos = 0;
+        while ((i = StringUtils.indexOfIgnoreCase(unicode, "\\u", pos)) != -1) {
+            sb.append(unicode, pos, i);//写入Unicode符之前的部分
+            pos = i;
+            if (i + 5 < len) {
+                char c;
+                try {
+                    c = (char) Integer.parseInt(unicode.substring(i + 2, i + 6), 16);
+                    sb.append(c);
+                    pos = i + 6;//跳过整个Unicode符
+                } catch (NumberFormatException e) {
+                    //非法Unicode符，跳过
+                    sb.append(unicode, pos, i + 2);//写入"\\u"
+                    pos = i + 2;
+                }
+            } else {
+                //非Unicode符，结束
+                break;
+            }
+        }
+
+        if (pos < len) {
+            sb.append(unicode, pos, len);
+        }
+        return sb.toString();
     }
 
 

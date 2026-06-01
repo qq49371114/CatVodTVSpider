@@ -30,7 +30,7 @@ import java.util.regex.Pattern;
  */
 public class Wogg extends Cloud {
 
-    private String siteUrl = "https://wogg.xxooo.cf/";
+    private String siteUrl = "https://woggpan.888484.xyz/";
     private final Pattern regexCategory = Pattern.compile("/vodtype/(\\w+).html");
     private final Pattern regexPageTotal = Pattern.compile("\\$\\(\"\\.mac_total\"\\)\\.text\\('(\\d+)'\\);");
 
@@ -47,7 +47,7 @@ public class Wogg extends Cloud {
         if (!siteList.isEmpty()) {
             for (JsonElement jsonElement : siteList) {
                 String html = OkHttp.string(jsonElement.getAsString());
-                if (html.contains("玩偶哥哥")) {
+                if (html.contains("电影")) {
                     siteUrl = jsonElement.getAsString();
                     break;
                 }

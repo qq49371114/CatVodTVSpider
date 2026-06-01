@@ -12,7 +12,6 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
-
 import com.github.catvod.bean.Result;
 import com.github.catvod.bean.Vod;
 import com.github.catvod.bean.quark.Cache;
@@ -26,7 +25,6 @@ import com.github.catvod.spider.Init;
 import com.github.catvod.spider.Proxy;
 import com.github.catvod.utils.*;
 import com.google.gson.Gson;
-
 import org.apache.commons.lang3.StringUtils;
 
 import java.io.ByteArrayInputStream;
@@ -73,7 +71,7 @@ public class QuarkApi {
         if (Util.getExt(url).contains("m3u8")) {
             return getM3u8(url, header);
         }
-        return ProxyVideo.proxy(url, header);
+        return ProxyVideo.proxyMultiThread(url, header);
     }
 
     /**
@@ -162,7 +160,14 @@ public class QuarkApi {
         getShareToken(shareData);
         List<Item> files = new ArrayList<>();
         List<Item> subs = new ArrayList<>();
-        List<Map<String, Object>> listData = listFile(1, shareData, files, subs, shareData.getShareId(), shareData.getFolderId(), 1);
+        try {
+            List<Map<String, Object>> listData = listFile(1, shareData, files, subs, shareData.getShareId(), shareData.getFolderId(), 1);
+
+        } catch (Exception e) {
+            SpiderDebug.log("资源已取消:" + e.getMessage());
+            Notify.show("资源已取消");
+            throw new RuntimeException(e);
+        }
 
         List<String> playFrom = QuarkApi.get().getPlayFormatList();
 
@@ -205,15 +210,18 @@ public class QuarkApi {
 
         String fileId = split[0], fileToken = split[1], shareId = split[2], stoken = split[3];
         String playUrl = "";
-        if (flag.contains("quark原画")) {
-            playUrl = this.getDownload(shareId, stoken, fileId, fileToken, true);
-        } else {
-            playUrl = this.getLiveTranscoding(shareId, stoken, fileId, fileToken, flag);
-        }
         Map<String, String> header = getHeaders();
         header.remove("Host");
         header.remove("Content-Type");
-        return Result.get().url(proxyVideoUrl(playUrl, header)).octet().header(header).string();
+        if (flag.contains("quark原画")) {
+            playUrl = this.getDownload(shareId, stoken, fileId, fileToken, true);
+            return Result.get().url(ProxyServer.INSTANCE.buildProxyUrl(playUrl, header)).octet().header(header).string();
+        } else {
+            playUrl = this.getLiveTranscoding(shareId, stoken, fileId, fileToken, flag);
+            return Result.get().url(proxyVideoUrl(playUrl, header)).octet().header(header).string();
+        }
+
+
     }
 
     private String proxyVideoUrl(String url, Map<String, String> header) {
@@ -370,7 +378,7 @@ public class QuarkApi {
 
     public List<String> getPlayFormatList() {
         if (this.isVip) {
-            return Arrays.asList("4K", "超清", "高清", "普画");
+            return Arrays.asList("4K"/*, "超清", "高清", "普画"*/);
         } else {
             return Collections.singletonList("普画");
         }
@@ -406,7 +414,7 @@ public class QuarkApi {
         for (Map<String, Object> item : items) {
             if (Boolean.TRUE.equals(item.get("dir"))) {
                 subDir.add(item);
-            } else if (Boolean.TRUE.equals(item.get("file")) && "video".equals(item.get("obj_category"))) {
+            } else if (Boolean.TRUE.equals(item.get("file")) && (Util.isMedia((String) item.get("file_name")))) {
                 if ((Double) item.get("size") < 1024 * 1024 * 5) continue;
                 item.put("stoken", this.shareTokenCache.get(shareData.getShareId()).get("stoken"));
                 videos.add(Item.objectFrom(item, shareData.getShareId(), shareIndex));
@@ -467,14 +475,17 @@ public class QuarkApi {
     }
 
     private void clearSaveDir() throws Exception {
-
         Map<String, Object> listData = Json.parseSafe(api("file/sort?" + this.pr + "&pdir_fid=" + this.saveDirId + "&_page=1&_size=200&_sort=file_type:asc,updated_at:desc", Collections.emptyMap(), Collections.emptyMap(), 0, "GET"), Map.class);
-        if (listData.get("data") != null && ((List<Map<String, Object>>) ((Map<String, Object>) listData.get("data")).get("list")).size() > 0) {
-            List<String> list = new ArrayList<>();
-            for (Map<String, Object> stringStringMap : ((List<Map<String, Object>>) ((Map<String, Object>) listData.get("data")).get("list"))) {
-                list.add((String) stringStringMap.get("fid"));
+
+        if (listData.get("data") != null) {
+            List<Map<String, Object>> fileList = (List<Map<String, Object>>) ((Map<String, Object>) listData.get("data")).get("list");
+            if (fileList.size() >= 10) {
+                List<String> fileIdsToDelete = new ArrayList<>();
+                for (Map<String, Object> file : fileList) {
+                    fileIdsToDelete.add((String) file.get("fid"));
+                }
+                api("file/delete?" + this.pr + "&uc_param_str=", Collections.emptyMap(), Map.of("action_type", 2, "filelist", fileIdsToDelete, "exclude_fids", Collections.emptyList()), 0, "POST");
             }
-            api("file/delete?" + this.pr, Collections.emptyMap(), Map.of("action_type", "2", "filelist", Json.toJson(list), "exclude_fids", ""), 0, "POST");
         }
     }
 
@@ -595,7 +606,7 @@ public class QuarkApi {
             params.setMargins(margin, margin, margin, margin);
             EditText input = new EditText(Init.context());
             frame.addView(input, params);
-            dialog = new AlertDialog.Builder(Init.getActivity()).setTitle("请输入cookie").setView(frame).setNeutralButton("QRCode", (dialog, which) -> onNeutral()).setNegativeButton(android.R.string.cancel, null).setPositiveButton(android.R.string.ok, (dialog, which) -> onPositive(input.getText().toString())).show();
+            dialog = new AlertDialog.Builder(Init.getActivity()).setTitle("请输入cookie").setView(frame).setNeutralButton("夸克二维码", (dialog, which) -> onNeutral()).setNegativeButton(android.R.string.cancel, null).setPositiveButton(android.R.string.ok, (dialog, which) -> onPositive(input.getText().toString())).show();
         } catch (Exception ignored) {
         }
     }

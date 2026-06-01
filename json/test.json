@@ -1,27 +1,27 @@
 {
-  "spider": "https://androidcatvodspider.pages.dev/jar/custom_spider.jar;md5;fc8f8fde90c2943674e0e38b00053bd5",
+  "spider": "https://gh.llkk.cc/https://raw.githubusercontent.com/lushunming/AndroidCatVodSpider/123/jar/custom_spider.jar;md5;77ff0d77d6fccecddd174ee82161f3bd",
   "lives": [
+    {
+      "name": "电视直播",
+      "type": "0",
+      "pass": true,
+      "url": "https://ghfast.top/raw.githubusercontent.com/Supprise0901/TVBox_live/main/live.txt",
+      "epg": "https://epg.112114.xyz/?ch={name}&date={date}",
+      "logo": "https://epg.112114.xyz/logo/{name}.png"
+    },
+    {
+      "name": "网络直播",
+      "type": "0",
+      "pass": true,
+      "url": "https://tv.iill.top/m3u/Live",
+      "epg": "https://epg.112114.xyz/?ch={name}&date={date}",
+      "logo": "https://epg.112114.xyz/logo/{name}.png"
+    },
     {
       "name": "直播",
       "type": "0",
       "pass": true,
-      "url": "https://ghp.ci/https://raw.githubusercontent.com/zwc456baby/iptv_alive/master/live.txt",
-      "epg": "https://epg.112114.xyz/?ch={name}&date={date}",
-      "logo": "https://epg.112114.xyz/logo/{name}.png"
-    },
-    {
-      "name": "直播ipv6",
-      "type": "0",
-      "pass": true,
-      "url": "https://fanmingming.com/txt?url=https://live.fanmingming.com/tv/m3u/ipv6.m3u",
-      "epg": "https://epg.112114.xyz/?ch={name}&date={date}",
-      "logo": "https://epg.112114.xyz/logo/{name}.png"
-    },
-    {
-      "name": "一木",
-      "type": "0",
-      "pass": true,
-      "url": "https://mirror.ghproxy.com/https://raw.githubusercontent.com/xianyuyimu/TVBOX-/main/TVBox/%E4%B8%80%E6%9C%A8%E7%9B%B4%E6%92%AD%E6%BA%90.txt",
+      "url": "https://ghfast.top/https://raw.githubusercontent.com/Wirili/IPTV/main/live.txt",
       "epg": "https://epg.112114.xyz/?ch={name}&date={date}",
       "logo": "https://epg.112114.xyz/logo/{name}.png"
     },
@@ -35,14 +35,30 @@
     }
   ],
   "sites": [
+    {
+      "key": "Introduce",
+      "name": "Cookie设置",
+      "type": 3,
+      "api": "csp_Introduce"
+    },
 
     {
-      "key": "QiLeSo",
-      "name": "奇乐搜┃搜索",
+      "key": "TgSearchBaidu",
+      "name": "☁TgSearchBaidu┃网盘",
       "type": 3,
-      "api": "csp_QiLeSo",
+      "api": "csp_TgSearchBaidu",
       "searchable": 1,
-      "timeout": 30
+      "filterable": 0,
+      "ext": {
+        "api_urls": [
+          "https://psweb.banye.tech:7777/api/search",
+          "https://so.566987.xyz/api/search",
+          "http://152.69.222.142:8088/api/search"
+        ],
+        "sources": [
+          "123盘"
+        ]
+      }
     }
 
   ],
